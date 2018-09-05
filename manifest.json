@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "name": "Comment disabler.",
+    "short_name": "DisCom",
+    "version": "1.0.0",
+    "description": "Disable comment if you dislike.",
+    "icons": {
+        "16": "icons/16px.png",
+        "48": "icons/48px.png",
+        "128": "icons/128px.png"
+    },
+    "permissions": [
+        "storage",
+        "unlimitedStorage"
+    ],
+    "browser_action": {
+        "default_icon": {
+            "19": "icons/19px.png"
+        },
+        "default_title": "settings.",
+        "default_popup": "settings/popup.html"
+    },
+    "content_scripts": [{
+        "matches": ["http://*/*, https://*/*"],
+        "js": ["comment_disable.js"]
+    }],
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    }
+}
