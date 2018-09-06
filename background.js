@@ -330,6 +330,95 @@ if (process.argv && process.argv.length > 2 && process.argv[2] == "debug") {
 
         console.log((arrayEquals(regularResults, actualyResults) ? "OK" : "FAILED"));
     }
+
+    console.log("");
+    console.log("");
+    console.log("");
+
+    console.log("start savePattern test..."); {
+        var items = [{
+                "url": "https://google.com",
+                "text": "unko"
+            },
+            {
+                "url": "https://google.com/test",
+                "text": "tikitiki"
+            },
+            {
+                "url": "https://twitter.com/test",
+                "text": "saiko"
+            },
+            {
+                "url": "https://*.*",
+                "text": "satoh"
+            },
+        ];
+
+        var regularResults = {
+            "google.com": [{
+                    "url": "https://google.com",
+                    "text": "unko"
+                },
+                {
+                    "url": "https://google.com/test",
+                    "text": "tikitiki"
+                }
+            ],
+            "twitter.com": [{
+                "url": "https://twitter.com/test",
+                "text": "saiko"
+            }],
+            "*.*": [{
+                "url": "https://*.*",
+                "text": "satoh"
+            }]
+        };
+
+        var actuallyResults = savePattern(items);
+
+        console.log("test items");
+        console.log(items);
+        console.log("regular results");
+        console.log(regularResults);
+        console.log("actuaaly results");
+        console.log(actuallyResults);
+
+        var result = true;
+        for (key in regularResults) {
+            if (!actuallyResults[key] || regularResults[key].length != actuallyResults[key].length) {
+                result = false;
+                break;
+            }
+            for (index in regularResults[key]) {
+                if (regularResults[key][index].url != actuallyResults[key][index].url ||
+                    regularResults[key][index].text != actuallyResults[key][index].text) result = false;
+            }
+        }
+
+        console.log((result) ? "OK" : "FAILED");
+    }
+
+    console.log("");
+    console.log("");
+    console.log("");
+
+    console.log("test switchCallRequestedMethod"); {
+        localStorage = {};
+        savePattern = function(items) {
+            return true;
+        };
+        checkComment = function(patterns, request) { return true; };
+
+        request = { "method": "savePattern" };
+        switchCallRequestedMethod(request);
+
+        console.log("method savePattern ...... " + ((localStorage["patterns"]) ? "OK" : "FAILED"));
+
+        request = { "method": "checkComment" };
+        var res = switchCallRequestedMethod(request);
+
+        console.log("method checkComment ...... " + ((res) ? "OK" : "FAILED"));
+    }
 }
 
 function switchCallRequestedMethod(request) {
@@ -351,8 +440,8 @@ function savePattern(items) {
     items.forEach(function(item) {
         var baseUrl = getBaseURL(item.url);
         if (!patterns[baseUrl])
-            patterns[item.url] = {};
-        patterns[item.url].push({ url: item.url, text: item.text });
+            patterns[baseUrl] = [];
+        patterns[baseUrl].push({ url: item.url, text: item.text });
     });
     return patterns;
 }
