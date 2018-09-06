@@ -29,19 +29,49 @@ function GetData() {
 function SaveData() {
     var elements = document.getElementById("site_list").children;
     var items = [];
+    var deletes = [];
     for (var i = 0; i < elements.length - 1; i++) {
         var item = {};
-        item["url"] = elements[i].getElementsByTagName("input")[0].value;
-        item["text"] = elements[i].getElementsByTagName("input")[1].value;
+        var fields = elements[i].getElementsByTagName("input");
+        if (fields[2].checked) {
+            deletes.push(i);
+            continue;
+        }
+
+        item["url"] = fields[0].value;
+        item["text"] = fields[1].value;
         items.push(item);
     }
     chrome.extension.getBackgroundPage().savePattern(JSON.stringify(items));
+    DeleteFields(deletes);
 }
 
 function AddInputField() {
     var list = this.document.getElementById("site_list");
     var addButtonElement = document.getElementById("button_li");
     CreateInputField(list, addButtonElement, "", "");
+}
+
+function DeleteField(index) {
+    var list = this.document.getElementById("site_list");
+    if (index == list.childElementCount - 1)
+        return;
+    var target = list.children[index];
+    target.remove();
+}
+
+function DeleteFields(indexes) {
+    var list = this.document.getElementById("site_list");
+    var targets = [];
+    for (index in indexes) {
+        if (index == list.childElementCount - 1)
+            return;
+        targets.push(list.children[index]);
+    }
+
+    targets.forEach(function(target) {
+        target.remove();
+    });
 }
 
 function CreateInputField(parent, youngBro, url, text) {
@@ -69,6 +99,18 @@ function CreateInputField(parent, youngBro, url, text) {
     label2.appendChild(textField);
 
     li.appendChild(label2);
+
+    var label3 = document.createElement("label");
+    var deleteCheckBox = document.createElement("input");
+    deleteCheckBox.name = "delete";
+    deleteCheckBox.type = "checkbox";
+    deleteCheckBox.value = 0;
+
+    var label3Text = document.createTextNode("delete");
+    label3.appendChild(deleteCheckBox);
+    label3.appendChild(label3Text);
+
+    li.appendChild(label3);
 
     parent.insertBefore(li, youngBro);
 }
