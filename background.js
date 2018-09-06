@@ -335,7 +335,7 @@ if (process.argv && process.argv.length > 2 && process.argv[2] == "debug") {
     console.log("");
     console.log("");
 
-    console.log("start savePattern test..."); {
+    console.log("start _savePattern test..."); {
         var items = [{
                 "url": "https://google.com",
                 "text": "unko"
@@ -374,7 +374,7 @@ if (process.argv && process.argv.length > 2 && process.argv[2] == "debug") {
             }]
         };
 
-        var actuallyResults = savePattern(items);
+        var actuallyResults = _savePattern(items);
 
         console.log("test items");
         console.log(items);
@@ -424,18 +424,22 @@ if (process.argv && process.argv.length > 2 && process.argv[2] == "debug") {
 function switchCallRequestedMethod(request) {
     var response = null;
     switch (request.method) {
-        case "savePattern":
-            localStorage["patterns"] = savePattern(request.items);
-            break;
         case "checkComment":
-            response = checkComment(localStorage["patterns"], request);
+            response = JSON.stringify(checkComment(JSON.parse(localStorage["patterns"]), request));
             break;
     }
     return response;
 }
 
-function savePattern(items) {
+function getData() {
+    return localStorage["patterns"];
+}
 
+function savePattern(items) {
+    localStorage["patterns"] = JSON.stringify(_savePattern(JSON.parse(items)));
+}
+
+function _savePattern(items) {
     var patterns = {};
     items.forEach(function(item) {
         var baseUrl = getBaseURL(item.url);
