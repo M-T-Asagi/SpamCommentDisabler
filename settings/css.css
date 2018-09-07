@@ -6,6 +6,7 @@ ul#site_list {
 }
 
 ul#site_list li {
+    position: relative;
     margin-top: 15px;
 }
 
