@@ -1,7 +1,4 @@
 window.onload = function() {
-    var list = this.document.getElementById("site_list");
-    var addButtonElement = document.getElementById("button_li");
-
     document.getElementById("add_button").addEventListener("click", function(e) {
         AddInputField();
         return false;
@@ -14,9 +11,11 @@ window.onload = function() {
     });
 
     var data = GetData();
+    var list = this.document.getElementById("site_list");
+    var replaceTextField = document.getElementById("replace_text");
     for (key in data) {
         for (var i = 0; data[key] && i < data[key].length; i++) {
-            CreateInputField(list, addButtonElement, data[key][i].url, data[key][i].text);
+            CreateInputField(list, replaceTextField, data[key][i].url, data[key][i].text);
         }
     }
 };
@@ -29,7 +28,7 @@ function SaveData() {
     var elements = document.getElementById("site_list").children;
     var items = [];
     var deletes = [];
-    for (var i = 0; i < elements.length - 1; i++) {
+    for (var i = 0; i < elements.length - 2; i++) {
         var item = {};
         var fields = elements[i].getElementsByTagName("input");
         if (fields[2].checked) {
@@ -50,8 +49,8 @@ function SaveData() {
 
 function AddInputField() {
     var list = this.document.getElementById("site_list");
-    var addButtonElement = document.getElementById("button_li");
-    CreateInputField(list, addButtonElement, "", "");
+    var replaceTextField = document.getElementById("replace_text");
+    CreateInputField(list, replaceTextField, "", "");
 }
 
 function DeleteField(index) {
