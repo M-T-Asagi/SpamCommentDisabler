@@ -333,6 +333,102 @@ try {
         console.log("");
         console.log("");
 
+        console.log("start _replaceOpnable text..."); {
+            var testRequest = {
+                "url": "https://test.com/",
+                "text": "fuckappleunkoringo"
+            };
+            var testPatterns = {
+                "test.com": [{
+                    "url": "https://test.com/",
+                    "text": "fuck"
+                }],
+                "*": [{
+                    "url": "https://*",
+                    "text": "unko"
+                }],
+                "test.ama": [{
+                    "url": "https://test.ama",
+                    "text": "ringo"
+                }]
+            };
+            var regularResult = [
+                ["fuck", 1],
+                ["apple", 0],
+                ["unko", 1],
+                ["ringo", 0]
+            ];
+            var regularCalled = 2;
+
+            var actualyCalled = 0;
+
+            var _test_checkWildCardtextFromTo = checkWildCardtextFromTo;
+            checkWildCardtextFromTo = function(pattern, text) {
+                actualyCalled++;
+                return _test_checkWildCardtextFromTo(pattern, text);
+            };
+
+            var actuallyResult = _replaceOpnable(testRequest, testPatterns);
+
+            console.log("test patterns");
+            console.log(testPatterns);
+            console.log("test Requests")
+            console.log(testRequest);
+
+            var result = true;
+            console.log(regularResult);
+            console.log(actuallyResult);
+            for (index in regularResult) {
+                var res = (regularResult[index][0] == actuallyResult[index][0] && regularResult[index][1] == actuallyResult[index][1]);
+                console.log("regular[" + index + "]  - [" + regularResult[index][0] + ", " + regularResult[index][1] + " / actually[" + index + "] - [" + actuallyResult[index][0] + ", " + actuallyResult[index][1] + "] ......... " + ((res) ? "OK" : "FAILED"));
+                result = (result && res);
+            }
+
+            console.log("regular called num - " + regularCalled + " / actually called num - " + actualyCalled + " ......... " + ((regularCalled == actualyCalled) ? "OK" : "FAILED"));
+            console.log((result && (regularCalled == actualyCalled)) ? "OK" : "FIALED");
+        }
+
+        console.log("");
+        console.log("");
+        console.log("");
+
+        console.log("start checkWildCardTextFromTo text..."); {
+            replaceWildCardToRegex = function(pattern) { return pattern; };
+            var testPattern = "f..k";
+            var text = "arigatofuckarigatofuckarigatofuckarigatofuckabc";
+            var regular = [
+                ["arigato", 0],
+                ["fuck", 1],
+                ["arigato", 0],
+                ["fuck", 1],
+                ["arigato", 0],
+                ["fuck", 1],
+                ["arigato", 0],
+                ["fuck", 1],
+                ["abc", 0]
+            ];
+            var actually = checkWildCardtextFromTo(testPattern, text);
+            console.log("testPattern");
+            console.log(testPattern);
+            console.log("text");
+            console.log(text);
+            console.log("regular");
+            console.log(regular);
+            console.log("actually");
+            console.log(actually);
+
+            var res = true;
+            for (index in regular) {
+                res = (res && (regular[index][0] == actually[index][0]) && (regular[index][1] == actually[index][1]));
+            }
+
+            console.log((res) ? "OK" : "FAILED");
+        }
+
+        console.log("");
+        console.log("");
+        console.log("");
+
         console.log("start _replaceText test..."); {
             var requests = [{
                     "url": "https://twitter.com",
@@ -447,6 +543,38 @@ function _replaceText(request, patterns, replaceTo) {
     return text;
 }
 
+function replaceOpnable(request) {
+    return _replaceOpnable()
+}
+
+function _replaceOpnable(request, patterns) {
+    var texts = [
+        [request.text, 0]
+    ];
+    for (key in patterns) {
+        if (!checkWildCardtext(key, getBaseURL(request.url)))
+            continue;
+
+        for (index in patterns[key]) {
+            var _texts = [];
+            for (var i = 0; i < texts.length; i++) {
+                if (texts[i][1] == 1) {
+                    _texts.push(texts[i]);
+                    continue;
+                }
+
+                var res = checkWildCardtextFromTo(patterns[key][index].text, texts[i][0]);
+                console.log(res);
+                for (k in res)
+                    _texts.push(res[k]);
+            }
+            console.log(_texts);
+            texts = _texts;
+        }
+    }
+    return texts;
+}
+
 function getBaseURL(url) {
     var reBaseUrl = /\/\/([a-zA-Z0-9\*\?\[\]\!\-\#\.]+)\/?.*/;
     return reBaseUrl.exec(url)[1];
@@ -461,6 +589,25 @@ function replaceTextWithWildCard(pattern, text, replaceTo) {
     pattern = replaceWildCardToRegex(pattern);
     re = new RegExp(pattern);
     return (text.replace(re, replaceTo));
+}
+
+function checkWildCardtextFromTo(pattern, text) {
+    pattern = replaceWildCardToRegex(pattern);
+    var re = new RegExp(pattern);
+    var result = [];
+    while (true) {
+        var _res = text.match(re);
+        if (_res == null)
+            break;
+
+        if (_res.index != 0)
+            result.push([text.slice(0, _res.index), 0]);
+        result.push([text.substr(_res.index, _res[0].length), 1]);
+        text = text.slice(_res.index + _res[0].length);
+    }
+
+    result.push([text, 0]);
+    return result;
 }
 
 function checkWildCardtext(pattern, text) {
