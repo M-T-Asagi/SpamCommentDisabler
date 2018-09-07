@@ -23,7 +23,7 @@ window.onload = function() {
 };
 
 function GetData() {
-    return JSON.parse(chrome.extension.getBackgroundPage().getData());
+    return JSON.parse(chrome.extension.getBackgroundPage().getPattern());
 }
 
 function SaveData() {
@@ -36,13 +36,15 @@ function SaveData() {
         if (fields[2].checked) {
             deletes.push(i);
             continue;
+        } else if (!fields[0].value.match(/.*:\/\/.+/) || fields[1].value.length < 1) {
+            continue;
         }
 
         item["url"] = fields[0].value;
         item["text"] = fields[1].value;
         items.push(item);
     }
-    chrome.extension.getBackgroundPage().savePattern(JSON.stringify(items));
+    chrome.extension.getBackgroundPage().savePattern(items);
     DeleteFields(deletes);
 }
 
