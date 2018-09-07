@@ -15,7 +15,6 @@ window.onload = function() {
 
     var data = GetData();
     for (key in data) {
-        console.log(key);
         for (var i = 0; data[key] && i < data[key].length; i++) {
             CreateInputField(list, addButtonElement, data[key][i].url, data[key][i].text);
         }
@@ -45,6 +44,7 @@ function SaveData() {
         items.push(item);
     }
     chrome.extension.getBackgroundPage().savePattern(items);
+    chrome.extension.getBackgroundPage().save("replaceTo", (document.getElementById("replaceto").value) ? document.getElementById("replaceto").value : "replaced");
     DeleteFields(deletes);
 }
 
