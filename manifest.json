@@ -21,8 +21,8 @@
         "default_popup": "settings/popup.html"
     },
     "content_scripts": [{
-        "matches": ["http://*/*, https://*/*"],
-        "js": ["comment_disable.js"]
+        "matches": ["<all_urls>"],
+        "js": ["main/main.js"]
     }],
     "background": {
         "scripts": ["background.js"],
