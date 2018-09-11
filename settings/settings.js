@@ -28,6 +28,7 @@ function SaveData() {
     var elements = document.getElementById("site_list").children;
     var items = [];
     var deletes = [];
+    var backgroundPage = chrome.extension.getBackgroundPage();
     for (var i = 0; i < elements.length - 2; i++) {
         var item = {};
         var fields = elements[i].getElementsByTagName("input");
@@ -40,10 +41,11 @@ function SaveData() {
 
         item["url"] = fields[0].value;
         item["text"] = fields[1].value;
+        item["regex"] = backgroundPage.replaceWildCardToRegex(item.text);
         items.push(item);
     }
-    chrome.extension.getBackgroundPage().savePattern(items);
-    chrome.extension.getBackgroundPage().save("replaceTo", (document.getElementById("replaceto").value) ? document.getElementById("replaceto").value : "replaced");
+    backgroundPage.savePattern(items);
+    backgroundPage.save("replaceTo", (document.getElementById("replaceto").value) ? document.getElementById("replaceto").value : "replaced");
     DeleteFields(deletes);
 }
 
