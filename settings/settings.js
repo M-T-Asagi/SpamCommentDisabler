@@ -37,7 +37,9 @@ function SaveData() {
                 case "delete":
                     if (fields[index].checked) {
                         deletes.push(i);
-                        continue;
+                        fields[index] = {};
+                        item = {};
+                        break;
                     }
                     break;
                 case "openable":
