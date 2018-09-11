@@ -442,7 +442,9 @@ function switchCallRequestedMethod(request) {
     var response = null;
     switch (request.method) {
         case "replaceText":
-            response = checkTextReplace(request);
+            response = {};
+            response["texts"] = checkTextReplace(request);
+            response["replaceTo"] = read("replaceTo");
             console.log(response);
             break;
     }
