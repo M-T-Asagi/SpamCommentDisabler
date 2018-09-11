@@ -7,6 +7,12 @@ try {
 }
 
 try {
+    var greatestResult = 0;
+    var testProcessinoCalled = 0;
+    var addGreatestResult = function(result) {
+        greatestResult += (result) ? 1 : 0;
+        testProcessinoCalled++;
+    };
     if (process != null && process.argv && process.argv.length > 2 && process.argv[2] == "debug") {
         var arrayEquals = function(a, b) {
             if (a.length != b.length)
@@ -38,6 +44,7 @@ try {
 
             console.log("replaceText is " + ((calledReplaceText) ? "called" : "uncalled"));
             console.log((calledReplaceText) ? "OK" : "FAILED");
+            addGreatestResult((calledReplaceText));
         }
 
         console.log("");
@@ -58,7 +65,9 @@ try {
             console.log("test2");
             console.log(actually2);
 
-            console.log((arrayEquals(regular, actually) && actually2 == null) ? "OK" : "FAILED");
+            var result = (arrayEquals(regular, actually) && actually2 == null);
+            console.log(result ? "OK" : "FAILED");
+            addGreatestResult(result);
         }
 
         console.log("");
@@ -76,6 +85,7 @@ try {
             console.log("regular : " + regular);
             console.log("actually : " + localStorage[testKey]);
             console.log((regular == localStorage[testKey]) ? "OK" : "FAILED");
+            addGreatestResult(regular == localStorage[testKey]);
         }
 
         console.log("");
@@ -88,6 +98,7 @@ try {
             read = function(key) { called = true; return key; };
             var readKey = JSON.parse(getPattern());
             console.log("isCalled : " + ((called) ? "called" : "uncalled") + " / read key : " + readKey + " ...... " + ((called && readKey == "patterns") ? "OK" : "FAILED"));
+            addGreatestResult((called) && (readKey == "patterns"));
         }
 
         console.log("");
@@ -100,6 +111,7 @@ try {
             var regular = "http.:\\/\\/.*\\..*\\/[^kill]\\/[0-9]abc\+bbc";
             console.log("test input is : " + testInput + " : processed : " + processed + " : regular : " + regular);
             console.log((processed == regular) ? "OK" : "FAILED");
+            addGreatestResult((processed == regular));
         }
 
         console.log("");
@@ -126,7 +138,6 @@ try {
                 results.push(checkWildCardtext(testPattern, testUrls[index]));
             }
 
-
             console.log("test inputs are");
             console.log(testUrls);
             console.log("regular results are");
@@ -136,6 +147,8 @@ try {
 
 
             console.log((arrayEquals(regular, results)) ? "OK" : "FAILED");
+
+            addGreatestResult(arrayEquals(regular, results) ? 1 : 0);
         }
 
         console.log("");
@@ -176,8 +189,8 @@ try {
                 console.log(urls[index] + " - " + regularResults[index] + " ............ " + OKFAILED);
             }
 
-            var OKFAILED = (result) ? "OK" : "FAILED";
-            console.log(OKFAILED);
+            console.log((result) ? "OK" : "FAILED");
+            addGreatestResult(result);
         }
 
         console.log("");
@@ -209,8 +222,8 @@ try {
                 console.log(urls[index] + " - " + regularResults[index] + " - " + getAddress(urls[index] + " ............ " + OKFAILED));
             }
 
-            var OKDAILED = (result) ? "OK" : "FAILED";
-            console.log(OKFAILED);
+            console.log((result) ? "OK" : "FAILED");
+            addGreatestResult(result);
         }
 
         console.log("");
@@ -260,6 +273,7 @@ try {
                 console.log("input - " + texts[index] + " / regular - " + regularResults[index] + " / result - " + replaced + " ......... " + OKFAILED);
             }
             console.log((result) ? "OK" : "FAILED");
+            addGreatestResult(greatestResult && result);
         }
 
         console.log("");
@@ -327,6 +341,7 @@ try {
             }
 
             console.log((result) ? "OK" : "FAILED");
+            addGreatestResult(greatestResult && result);
         }
 
         console.log("");
@@ -362,10 +377,10 @@ try {
 
             var actualyCalled = 0;
 
-            var _test_checkWildCardtextFromTo = checkWildCardtextFromTo;
-            checkWildCardtextFromTo = function(pattern, text) {
+            var _test_checkWildCardTextFromTo = checkWildCardTextFromTo;
+            checkWildCardTextFromTo = function(pattern, text) {
                 actualyCalled++;
-                return _test_checkWildCardtextFromTo(pattern, text);
+                return _test_checkWildCardTextFromTo(pattern, text);
             };
 
             var actuallyResult = _replaceOpnable(testRequest, testPatterns);
@@ -386,13 +401,14 @@ try {
 
             console.log("regular called num - " + regularCalled + " / actually called num - " + actualyCalled + " ......... " + ((regularCalled == actualyCalled) ? "OK" : "FAILED"));
             console.log((result && (regularCalled == actualyCalled)) ? "OK" : "FIALED");
+            addGreatestResult(greatestResult && (result && (regularCalled == actualyCalled)));
         }
 
         console.log("");
         console.log("");
         console.log("");
 
-        console.log("start checkWildCardTextFromTo text..."); {
+        console.log("start checkWildCardTextFromTo test..."); {
             replaceWildCardToRegex = function(pattern) { return pattern; };
             var testPattern = "f..k";
             var text = "arigatofuckarigatofuckarigatofuckarigatofuckabc";
@@ -407,7 +423,8 @@ try {
                 ["fuck", 1],
                 ["abc", 0]
             ];
-            var actually = checkWildCardtextFromTo(testPattern, text);
+
+            var actually = checkWildCardTextFromTo(testPattern, text);
             console.log("testPattern");
             console.log(testPattern);
             console.log("text");
@@ -422,7 +439,18 @@ try {
                 res = (res && (regular[index][0] == actually[index][0]) && (regular[index][1] == actually[index][1]));
             }
 
-            console.log((res) ? "OK" : "FAILED");
+            console.log("no regex test ............ " + ((res) ? "OK" : "FAILED"));
+
+            var actually = checkWildCardTextFromTo(testPattern, text, false);
+            var res2 = true;
+            for (index in regular) {
+                res2 = (res2 && (regular[index][0] == actually[index][0]) && (regular[index][1] == actually[index][1]));
+            }
+
+            console.log("has regex test ............ " + ((res2) ? "OK" : "FAILED"));
+
+            console.log((res && res2) ? "OK" : "FAILED");
+            addGreatestResult(greatestResult && (res && res2));
         }
 
         console.log("");
@@ -449,11 +477,16 @@ try {
                         "url": "",
                         "text": "neko"
                     },
+                    {
+                        "url": "",
+                        "text": "anko",
+                        "regex": "anko"
+                    },
                 ]
             };
 
             var called = 0;
-            var regularCalled = 2;
+            var regularCalled = 3;
 
             replaceTextWithWildCard = function() {
                 called++;
@@ -471,13 +504,21 @@ try {
             console.log("num of call regular : " + regularCalled);
             console.log("num of call actually : " + called);
             console.log((called == regularCalled) ? "OK" : "FAILED");
+            addGreatestResult(greatestResult && (called == regularCalled));
         }
 
         console.log("");
         console.log("");
         console.log("");
 
-        console.log("test all clean.");
+        console.log("all test is finished.");
+        console.log("test procession called : " + testProcessinoCalled);
+        console.log("test Successed : " + greatestResult);
+
+        if (greatestResult == testProcessinoCalled)
+            console.log("test all clean.");
+        else
+            console.log("test failed!");
     }
 } catch (e) {
     console.log(e);
@@ -536,7 +577,8 @@ function _replaceText(request, patterns, replaceTo) {
             continue;
 
         for (var i = 0; i < patterns[key].length; i++) {
-            text = replaceTextWithWildCard(patterns[key][i].text, text, replaceTo);
+            var hasRegex = (patterns[key][i].regex != null);
+            text = replaceTextWithWildCard((hasRegex) ? patterns[key][i].regex : patterns[key][i].text, text, replaceTo, hasRegex);
         }
     }
     console.log(text);
@@ -563,7 +605,8 @@ function _replaceOpnable(request, patterns) {
                     continue;
                 }
 
-                var res = checkWildCardtextFromTo(patterns[key][index].text, texts[i][0]);
+                var hasRegex = (patterns[key][index].regex != null);
+                var res = checkWildCardTextFromTo((hasRegex) ? patterns[key][index].regex : patterns[key][index].text, texts[i][0], hasRegex);
                 console.log(res);
                 for (k in res)
                     _texts.push(res[k]);
@@ -585,14 +628,14 @@ function getAddress(url) {
     return reAddress.exec(url)[1];
 }
 
-function replaceTextWithWildCard(pattern, text, replaceTo) {
-    pattern = replaceWildCardToRegex(pattern);
+function replaceTextWithWildCard(pattern, text, replaceTo, convertPattern = true) {
+    pattern = (convertPattern) ? replaceWildCardToRegex(pattern) : pattern;
     re = new RegExp(pattern);
     return (text.replace(re, replaceTo));
 }
 
-function checkWildCardtextFromTo(pattern, text) {
-    pattern = replaceWildCardToRegex(pattern);
+function checkWildCardTextFromTo(pattern, text, convertPattern = true) {
+    pattern = (convertPattern) ? replaceWildCardToRegex(pattern) : pattern;
     var re = new RegExp(pattern);
     var result = [];
     while (true) {
