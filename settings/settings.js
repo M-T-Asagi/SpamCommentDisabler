@@ -21,7 +21,7 @@ window.onload = function() {
 };
 
 function GetData() {
-    return JSON.parse(chrome.extension.getBackgroundPage().getPattern());
+    return chrome.extension.getBackgroundPage().getPattern();
 }
 
 function SaveData() {
