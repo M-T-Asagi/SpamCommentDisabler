@@ -474,7 +474,7 @@ function _savePattern(items) {
         var baseUrl = getBaseURL(item.url);
         if (!patterns[baseUrl])
             patterns[baseUrl] = [];
-        patterns[baseUrl].push({ url: item.url, text: item.text, regex: item.regex });
+        patterns[baseUrl].push({ url: item.url, text: item.text, regex: item.regex, openable: item.openable });
     });
     return patterns;
 }

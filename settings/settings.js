@@ -15,7 +15,7 @@ window.onload = function() {
     var replaceTextField = document.getElementById("replace_text");
     for (key in data) {
         for (var i = 0; data[key] && i < data[key].length; i++) {
-            CreateInputField(list, replaceTextField, data[key][i].url, data[key][i].text);
+            CreateInputField(list, replaceTextField, data[key][i].url, data[key][i].text, data[key][i].openable);
         }
     }
 };
@@ -32,17 +32,32 @@ function SaveData() {
     for (var i = 0; i < elements.length - 2; i++) {
         var item = {};
         var fields = elements[i].getElementsByTagName("input");
-        if (fields[2].checked) {
-            deletes.push(i);
-            continue;
-        } else if (!fields[0].value.match(/.*:\/\/.+/) || fields[1].value.length < 1) {
-            continue;
+        for (index in fields) {
+            switch (fields[index].name) {
+                case "delete":
+                    if (fields[index].checked) {
+                        deletes.push(i);
+                        continue;
+                    }
+                    break;
+                case "openable":
+                    item["openable"] = fields[index].checked;
+                    break;
+                case "text":
+                    if (fields[index].value.length < 1)
+                        break;
+                    item["text"] = fields[index].value;
+                    item["regex"] = backgroundPage.replaceWildCardToRegex(item.text);
+                    break;
+                case "url":
+                    if (!fields[index].value.match(/.*:\/\/.+/))
+                        break;
+                    item["url"] = fields[index].value;
+                    break;
+            }
         }
-
-        item["url"] = fields[0].value;
-        item["text"] = fields[1].value;
-        item["regex"] = backgroundPage.replaceWildCardToRegex(item.text);
-        items.push(item);
+        if (Object.keys(item).length == 4)
+            items.push(item);
     }
     backgroundPage.savePattern(items);
     backgroundPage.save("replaceTo", (document.getElementById("replaceto").value) ? document.getElementById("replaceto").value : "replaced");
@@ -77,8 +92,21 @@ function DeleteFields(indexes) {
     });
 }
 
-function CreateInputField(parent, youngBro, url, text) {
+function CreateInputField(parent, youngBro, url, text, openable) {
     var li = document.createElement("li");
+
+    var labelOpenable = document.createElement("label");
+    labelOpenable.className = "openable";
+    var labelOpenableText = document.createTextNode("openable");
+    labelOpenable.appendChild(labelOpenableText);
+    var openableCheckBox = document.createElement("input");
+    openableCheckBox.name = "openable";
+    openableCheckBox.type = "checkbox";
+    openableCheckBox.checked = openable;
+    labelOpenable.appendChild(openableCheckBox);
+
+    li.appendChild(labelOpenable);
+
     var label1 = document.createElement("label");
     var urlField = document.createElement("input");
     urlField.name = "url";

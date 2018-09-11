@@ -13,3 +13,10 @@ ul#site_list li {
 ul#site_list li:first-child {
     margin-top: 0;
 }
+
+ul#site_list li label.openable {
+    position: absolute;
+    right: 0;
+    top: 0;
+    display: flex;
+}
