@@ -4,11 +4,14 @@ window.onload = function() {
         return false;
     });
 
-    this.document.getElementById("save_button").addEventListener("click", function(e) {
+    document.getElementById("save_button").addEventListener("click", function(e) {
         SaveData();
         alert("data are saved.");
         return false;
     });
+
+    var replaceTo = chrome.extension.getBackgroundPage().read("replaceTo");
+    this.document.getElementById("replaceto").value = replaceTo;
 
     var data = GetData();
     var list = this.document.getElementById("site_list");
