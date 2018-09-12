@@ -7,7 +7,9 @@ function getTextRecursion(element) {
     element.childNodes.forEach(function(node) {
         if (node.tagName) {
             getTextRecursion(node);
-        } else if (skipTag.indexOf(node.parentNode.tagName.toLowerCase()) == -1 && node.data.trim() != "") {
+        } else if (
+            skipTag.indexOf(node.parentNode.tagName.toLowerCase()) == -1 && node.data.trim() != "" &&
+            node.nodeType != Node.COMMENT_NODE) {
             replaceNode(node);
         }
     });
