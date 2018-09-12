@@ -1,5 +1,21 @@
 window.onload = function() {
-    getTextRecursion(document.body)
+    getTextRecursion(document.body);
+    var options = {
+        childList: true,
+        characterData: true,
+        subtree: true
+    };
+    var observer = new MutationObserver(function(mutations, _observer) {
+        observer.disconnect();
+        mutations.forEach(function(mutation) {
+            mutation.addedNodes.forEach(function(node) {
+                getTextRecursion(node);
+                console.log(node);
+            });
+        });
+        observer.observe(document, options);
+    });
+    observer.observe(document, options);
 };
 
 function getTextRecursion(element) {
@@ -7,12 +23,21 @@ function getTextRecursion(element) {
     element.childNodes.forEach(function(node) {
         if (node.tagName) {
             getTextRecursion(node);
-        } else if (
-            skipTag.indexOf(node.parentNode.tagName.toLowerCase()) == -1 && node.data.trim() != "" &&
-            node.nodeType != Node.COMMENT_NODE) {
-            replaceNode(node);
+        } else {
+            _getTextRecursion(node);
         }
     });
+    _getTextRecursion(element);
+}
+
+function _getTextRecursion(node) {
+    if (
+        node.nodeType == Node.TEXT_NODE &&
+        skipTag.indexOf(node.parentNode.tagName.toLowerCase()) == -1 &&
+        node.data.trim() != ""
+    ) {
+        replaceNode(node);
+    }
 }
 
 function replaceNode(node) {
