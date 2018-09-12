@@ -114,6 +114,7 @@ function CreateInputField(parent, youngBro, url, text, openable) {
     urlField.name = "url";
     urlField.type = "text";
     urlField.value = url;
+    urlField.placeholder = "example, ://*.*";
 
     var label1Text = document.createTextNode("Site url: ");
     label1.appendChild(label1Text);
@@ -126,6 +127,7 @@ function CreateInputField(parent, youngBro, url, text, openable) {
     textField.name = "text";
     textField.type = "text";
     textField.value = text;
+    textField.placeholder = "example, s.me[tT]xt";
 
     var label2Text = document.createTextNode("disable text: ");
     label2.appendChild(label2Text);
