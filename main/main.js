@@ -48,7 +48,24 @@ function createSpanElement(text, replaceTo) {
     element.className = "rsc-H18M53";
     element.setAttribute("rsc-H18M53-value-disp", replaceTo);
     element.setAttribute("rsc-H18M53-value-replaced", text);
+    element.setAttribute("rsc-H18M53-value-state-opened", 0);
     var textNode = document.createTextNode(replaceTo);
     element.appendChild(textNode);
+
+    element.addEventListener("click", function(e) {
+        var elem = e.target;
+        if (elem.getAttribute("rsc-H18M53-value-state-opened") == 0) {
+            replaceDisabledText(elem, document.createTextNode(elem.getAttribute("rsc-H18M53-value-replaced")));
+            elem.setAttribute("rsc-H18M53-value-state-opened", 1);
+        } else {
+            replaceDisabledText(elem, document.createTextNode(elem.getAttribute("rsc-H18M53-value-disp")));
+            elem.setAttribute("rsc-H18M53-value-state-opened", 0);
+        }
+    });
     return element;
+}
+
+function replaceDisabledText(node, text) {
+    node.insertBefore(text, node.childNodes[0]);
+    node.removeChild(node.childNodes[1]);
 }
